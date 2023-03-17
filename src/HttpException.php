@@ -12,14 +12,14 @@
 
 declare(strict_types=1);
 
-namespace WP\Exceptions;
+namespace Wp\Exceptions;
 
 use Exception;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Str;
 use Throwable;
-use WP\Exceptions\Responses\HtmlResponse;
-use WP\Exceptions\Responses\JsonResponse;
+use Wp\Exceptions\Responses\HtmlResponse;
+use Wp\Exceptions\Responses\JsonResponse;
 use WP_Http;
 use WP_Error;
 use WP_Rewrite;

@@ -10,7 +10,7 @@
 
 declare(strict_types=1);
 
-namespace WP\Exceptions\Responses;
+namespace Wp\Exceptions\Responses;
 
 use Illuminate\Http\JsonResponse as HttpJsonResponse;
 use WP_Http;

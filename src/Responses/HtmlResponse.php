@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-namespace WP\Exceptions\Responses;
+namespace Wp\Exceptions\Responses;
 
 use Symfony\Component\HttpFoundation\Response;
 use WP_Http;
