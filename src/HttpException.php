@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * Holds main exception class that is used to interrupt the WordPress logic when something
+ * goes wrong. It supports JSON and HTML response.
+ *
+ * @version 1.0.0
+ * @author matapatos
+ * @package wp-exceptions
+ * @uses roots/acorn
+ */
+
+declare(strict_types=1);
+
+namespace WP\Exceptions;
+
+use Exception;
+use Illuminate\Contracts\Support\Responsable;
+use Illuminate\Support\Str;
+use Throwable;
+use WP\Exceptions\Responses\HtmlResponse;
+use WP\Exceptions\Responses\JsonResponse;
+use WP_Http;
+use WP_Error;
+use WP_Rewrite;
+
+class HttpException extends Exception implements Responsable
+{
+    /**
+     * Holds the HTTP status error code to be thrown
+     */
+    protected $code = WP_Http::INTERNAL_SERVER_ERROR;
+
+    /**
+     * Holds the HTTP status error code to be thrown
+     */
+    protected $message = 'Something went wrong';
+
+    /**
+     * Holds additional data to be passed to the response
+     */
+    protected array $data = [];
+
+    /**
+     * Holds http headers to be sent in response
+     */
+    protected array $headers = [];
+
+    public function __construct(
+        ?string $message = null,
+        ?int $code = null,
+        array $data = [],
+        array $headers = [],
+        ?Throwable $previous = null
+    ) {
+        $this->data = $data;
+        $this->headers = $headers;
+        $this->message = $message ?: $this->message;
+        $this->code = $code ?: $this->code;
+        parent::__construct($this->message, $this->code, $previous);
+    }
+
+    /**
+     * Creates a new instance using a WP_Error class
+     *
+     * @version 1.0.0
+     */
+    public static function fromWpError(WP_Error $error): HttpException
+    {
+        return new HttpException(
+            $error->get_error_message(),
+            $error->get_error_code() ?: null,
+            $error->get_error_data(),
+        );
+    }
+
+    /**
+     * Create an HTTP response that represents the object.
+     *
+     * @version 1.0.0
+     * @param  \Illuminate\Http\Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function toResponse($request)
+    {
+        $isRestRequest = self::isRestRequest();
+        $class = $isRestRequest ? JsonResponse::class : HtmlResponse::class;
+        $class = apply_filters('http_exception_response_class', $class, $this);
+        return new $class($this->message, $this->code, $this->data, $this->headers);
+    }
+
+    /**
+     * @version 1.0.0
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @version 1.0.0
+     */
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * Checks if a given request is a REST request.
+     *
+     * @link https://wordpress.stackexchange.com/questions/221202/does-something-like-is-rest-exist#answer-317041
+     * @author matzeeable
+     */
+    protected static function isRestRequest(): bool
+    {
+        if (defined('REST_REQUEST') && REST_REQUEST) {
+            return true;
+        }
+
+        if (isset($_GET['rest_route']) && Str::startsWith(isset($_GET['rest_route']), '/')) {
+            return true;
+        }
+
+        global $wp_rewrite;
+        if ($wp_rewrite === null) {
+            $wp_rewrite = new WP_Rewrite();
+        }
+
+        $restUrl = wp_parse_url(trailingslashit(rest_url()));
+        $currentUrl = wp_parse_url(add_query_arg([]));
+        return Str::startsWith($currentUrl['path'] ?? '/', $restUrl['path']);
+    }
+}
