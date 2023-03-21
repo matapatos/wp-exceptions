@@ -1,5 +1,5 @@
 {
-  "name": "matapatos/wp-exceptions",
+  "name": "myspanishnow/wp-exceptions",
   "type": "library",
   "license": "MIT",
   "description": "Don't feel sorry to interrupt. WordPress exceptions made easy",
@@ -10,8 +10,7 @@
   ],
   "keywords": [
     "wordpress",
-    "exceptions",
-    "matapatos"
+    "exceptions"
   ],
   "support": {
     "issues": "https://github.com/matapatos/wp-exceptions/issues"
@@ -23,7 +22,8 @@
   },
   "require": {
     "php": "^7.4|^8.0",
-    "roots/acorn": "^2.0"
+    "illuminate/contracts": "^8.83",
+    "symfony/http-foundation": "^6.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.4"

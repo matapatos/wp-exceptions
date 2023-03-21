@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Wp\Exceptions\Responses;
 
-use Illuminate\Http\JsonResponse as HttpJsonResponse;
+use Symfony\Component\HttpFoundation\JsonResponse as BaseJsonResponse;
 use WP_Http;
 
-class JsonResponse extends HttpJsonResponse
+class JsonResponse extends BaseJsonResponse
 {
     /**
      * @throws \InvalidArgumentException When the HTTP status code is not valid
@@ -25,11 +25,10 @@ class JsonResponse extends HttpJsonResponse
         ?int $status = WP_Http::INTERNAL_SERVER_ERROR,
         array $data = [],
         array $headers = [],
-        $options = 0,
         $json = false
     ) {
         $content = $this->getResponseContent($message, $status, $data);
-        parent::__construct($content, $status, $headers, $options, $json);
+        parent::__construct($content, $status, $headers, $json);
     }
 
     /**
@@ -50,6 +49,6 @@ class JsonResponse extends HttpJsonResponse
             $content['data'] = $data;
         }
 
-        return $content;
+        return json_encode($content, \JSON_THROW_ON_ERROR);
     }
 }
