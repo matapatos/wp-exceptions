@@ -53,10 +53,10 @@ class HtmlResponse extends Response implements ResponseInterface
         }
 
         $args = apply_filters('html_response_view_args', [
-            'title'         => 'Something went wrong',
-            'errorMessage'  => $message,
-            'httpStatus'    => $status,
-            'data'          => $data,
+            'title'     => 'Something went wrong',
+            'message'   => $message,
+            'code'      => $status,
+            'data'      => $data,
         ]);
         // Avoid issues while rendering http errors in wp-admin requests
         if (is_admin()) {
