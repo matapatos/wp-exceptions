@@ -65,10 +65,15 @@ class HttpException extends Exception implements Responsable
      */
     public static function fromWpError(WP_Error $error): HttpException
     {
+        $status = $error->get_error_code();
+        if (!is_int($status)) {
+            $status = null;
+        }
+
         return new HttpException(
             $error->get_error_message(),
-            $error->get_error_code() ?: null,
-            $error->get_error_data(),
+            $status,
+            $error->get_error_data() ?: [],
         );
     }
 
