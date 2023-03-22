@@ -49,6 +49,6 @@ class JsonResponse extends BaseJsonResponse
             $content['data'] = $data;
         }
 
-        return json_encode($content, \JSON_THROW_ON_ERROR);
+        return $content;
     }
 }
