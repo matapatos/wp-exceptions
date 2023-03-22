@@ -42,7 +42,7 @@ class JsonResponse extends BaseJsonResponse
         array $data = []
     ) {
         $content = [
-            'message'   => esc_html__($message),
+            'message'   => __($message),
             'code'      => $status,
         ];
         if ($data) {
