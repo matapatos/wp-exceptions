@@ -22,8 +22,8 @@
   },
   "require": {
     "php": "^7.4|^8.0",
-    "illuminate/contracts": "^8.83",
-    "symfony/http-foundation": "^6.0"
+    "illuminate/contracts": ">=5.5",
+    "symfony/http-foundation": ">=5.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.4"
