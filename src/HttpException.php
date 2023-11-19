@@ -4,10 +4,9 @@
  * Holds main exception class that is used to interrupt the WordPress logic when something
  * goes wrong. It supports JSON and HTML response.
  *
- * @version 1.0.0
+ * @version 1.0.1
  * @author matapatos
  * @package wp-exceptions
- * @uses roots/acorn
  */
 
 declare(strict_types=1);
@@ -16,7 +15,6 @@ namespace Wp\Exceptions;
 
 use Exception;
 use Illuminate\Contracts\Support\Responsable;
-use Illuminate\Support\Str;
 use Throwable;
 use Wp\Exceptions\Responses\HtmlResponse;
 use Wp\Exceptions\Responses\JsonResponse;
@@ -67,10 +65,15 @@ class HttpException extends Exception implements Responsable
      */
     public static function fromWpError(WP_Error $error): HttpException
     {
+        $status = $error->get_error_code();
+        if (!is_int($status)) {
+            $status = null;
+        }
+
         return new HttpException(
             $error->get_error_message(),
-            $error->get_error_code() ?: null,
-            $error->get_error_data(),
+            $status,
+            $error->get_error_data() ?: [],
         );
     }
 
@@ -117,7 +120,7 @@ class HttpException extends Exception implements Responsable
             return true;
         }
 
-        if (isset($_GET['rest_route']) && Str::startsWith(isset($_GET['rest_route']), '/')) {
+        if (isset($_GET['rest_route']) && strpos($_GET['rest_route'], '/', 0) === 0) {
             return true;
         }
 
@@ -128,6 +131,6 @@ class HttpException extends Exception implements Responsable
 
         $restUrl = wp_parse_url(trailingslashit(rest_url()));
         $currentUrl = wp_parse_url(add_query_arg([]));
-        return Str::startsWith($currentUrl['path'] ?? '/', $restUrl['path']);
+        return strpos($currentUrl['path'] ?? '/', $restUrl['path'], 0) === 0;
     }
 }
