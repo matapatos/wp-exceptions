@@ -1,2 +1,3 @@
 # WordPress Exceptions
-Project has moved to [myspanishnow/wp-exceptions](https://github.com/myspanishnow/wp-exceptions)
+
+Don't feel sorry to interrupt. WordPress exceptions made simple.
